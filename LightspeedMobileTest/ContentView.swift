@@ -5,13 +5,13 @@
 //  Created by Andrew So on 2025-08-22.
 //
 //  Purpose:
-//    Main SwiftUI view for displaying and managing a list of random images.
-//    Supports adding, deleting, reordering, and viewing images in full screen.
+//    Main SwiftUI view for browsing and managing a gallery of images.
+//    Supports adding a random image, deleting, reordering, and full-screen viewing.
 //
 //  Notes:
-//    - Uses ImageListStore as the source of truth for image data.
-//    - Provides two modes: normal (add) and editing (delete/reorder).
-//    - Presents a full-screen viewer when an image row is tapped.
+//    - Uses ImageListStore as the source of truth.
+//    - Inline styling aims for a clean, modern gallery look.
+//    - Title updated from "Random Images" to "Image Gallery" with inline display.
 //
 
 import SwiftUI
@@ -28,30 +28,41 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
-                // Top button switches depending on edit mode
-                if mode == .active {
-                    Button("Clear All") {
-                        store.deleteAll()
+            VStack(spacing: 0) {
+                
+                // Primary action switches depending on edit mode.
+                Group {
+                    if mode == .active {
+                        Button {
+                            store.deleteAll()
+                        } label: {
+                            Label("Clear All", systemImage: "trash")
+                        }
+                        .buttonStyle(.bordered)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal)
+                    } else {
+                        Button {
+                            Task { try? await store.addRandomImage() }
+                        } label: {
+                            Label("Add Random Image", systemImage: "sparkles")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal)
                     }
-                    .buttonStyle(.bordered)
-                    .padding()
-                } else {
-                    Button("Add Random Image") {
-                        Task { try? await store.addRandomImage() }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .padding()
                 }
 
-                // List of images
+                // Gallery list
                 List {
                     ForEach(store.items) { item in
-                        HStack {
-                            // Thumbnail preview of the image
+                        HStack(spacing: 16) {
+                            // Thumbnail preview
                             AsyncImage(url: URL(string: item.download_url)) { phase in
                                 if let image = phase.image {
-                                    image.resizable().scaledToFill()
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
                                 } else if phase.error != nil {
                                     Color.red
                                 } else {
@@ -59,13 +70,20 @@ struct ContentView: View {
                                 }
                             }
                             .frame(width: 80, height: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .shadow(radius: 4)
 
-                            // Author name
-                            Text(item.author)
-                                .font(.headline)
+                            // Metadata
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(item.author)
+                                    .font(.headline)
+                                Text("ID: \(item.id)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .lineLimit(1)
                         }
-                        // Make the whole row tappable (but disabled while editing)
+                        // Make the whole row tappable (disabled while editing)
                         .contentShape(Rectangle())
                         .onTapGesture {
                             guard mode == .inactive else { return }
@@ -75,12 +93,14 @@ struct ContentView: View {
                     .onDelete(perform: store.delete)
                     .onMove(perform: store.move)
                 }
+                .listStyle(.insetGrouped)
                 .environment(\.editMode, $mode)
             }
-            .navigationTitle("Random Images")
+            .navigationTitle("Image Gallery")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                // Edit/Done toggle
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    // Edit/Done toggle button
                     Button(mode == .active ? "Done" : "Edit") {
                         withAnimation {
                             mode = (mode == .active ? .inactive : .active)
@@ -89,6 +109,7 @@ struct ContentView: View {
                 }
             }
         }
+        // Animate mode changes for a smoother UX.
         .animation(.default, value: mode)
     }
 }
