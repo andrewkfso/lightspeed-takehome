@@ -121,7 +121,7 @@ final class Lightspeed_iOS_TakeHomeUITests: XCTestCase {
 
         // Long-press and drag the first cell onto the last cell
         // (works with SwiftUI List reordering)
-        firstCell.press(forDuration: 0.9, thenDragTo: lastCell)
+        firstCell.press(forDuration: 0.9, thenDragTo: lastCell) 
 
         exitEditMode()
 
