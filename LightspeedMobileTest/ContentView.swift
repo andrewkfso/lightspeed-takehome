@@ -111,5 +111,10 @@ struct ContentView: View {
         }
         // Animate mode changes for a smoother UX.
         .animation(.default, value: mode)
+
+        // Presents a full-screen image viewer when an item is selected.
+        .fullScreenCover(item: $selectedItem) { item in
+            ImageFullScreenView(item: item)
+        }
     }
 }
