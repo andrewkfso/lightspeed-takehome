@@ -8,10 +8,10 @@
 import Foundation
 
 final class APIService {
-    /// Fetches a list of images from the Picsum API.
-    /// - Returns: An array of `ImageItem` decoded from JSON.
-    /// - Throws: `URLError.badServerResponse` if the HTTP response is invalid,
-    ///           or a decoding error if the data format is unexpected.
+    // Fetches a list of images from the Picsum API.
+    // Returns: An array of `ImageItem` decoded from JSON.
+    // Throws: `URLError.badServerResponse` if the HTTP response is invalid,
+    //           or a decoding error if the data format is unexpected.
     final class APIService {
         func fetchImages() async throws -> [ImageItem] {
             let url = URL(string: "https://picsum.photos/v2/list")!
