@@ -66,4 +66,10 @@ final class ImageListStore: ObservableObject {
         items.move(fromOffsets: source, toOffset: destination)
         storage.save(items)
     }
+    
+    // Removes all images and saves the empty list.
+    func deleteAll() {
+        items.removeAll()
+        storage.save(items)
+    }
 }
