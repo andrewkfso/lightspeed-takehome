@@ -60,16 +60,4 @@ final class ImageListStore: ObservableObject {
         items.remove(atOffsets: offsets)
         storage.save(items)
     }
-    
-    // Moves images from the source indices to the destination index, then saves.
-    func move(from source: IndexSet, to destination: Int) {
-        items.move(fromOffsets: source, toOffset: destination)
-        storage.save(items)
-    }
-    
-    // Removes all images and saves the empty list.
-    func deleteAll() {
-        items.removeAll()
-        storage.save(items)
-    }
 }
